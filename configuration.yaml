@@ -1,0 +1,254 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+  base_url: https://ha-ronansusan.duckdns.org:8123
+  server_port: 8123
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+####################
+# Text to speech ###
+####################
+tts:
+  - platform: google_translate
+
+####################
+# Google Assistant #
+####################
+
+####################
+# Themes   #########
+####################
+frontend:
+  themes: !include themes.yaml
+
+####################
+# Includes #########
+####################
+automation: !include automations.yaml
+group: !include groups.yaml
+scene: !include scenes.yaml
+sensor: !include sensors.yaml
+script: !include scripts.yaml
+
+####################
+# Customizations ###
+####################
+homeassistant:
+  customize: !include customize.yaml
+
+####################
+# Custom components#
+####################
+#shopping_list:
+circadian_lighting:
+
+media_player:
+  - platform: spotify
+    name: 'Spotify Susan'
+    client_id: !secret spotify_clientid_susan
+    client_secret: !secret spotify_clientsecret_susan
+    cache_path: '.cache1'
+  - platform: spotify
+    name: 'Spotify Ronan'
+    client_id: !secret spotify_clientid_ronan
+    client_secret: !secret spotify_clientsecret_ronan
+    cache_path: '.cache2'
+
+wake_on_lan:
+switch:
+  - platform: wake_on_lan
+    mac: 'E0-D5-5E-DE-FF-01'
+    name: "PC Power"
+    host: 'DESKTOP-MK5D273'
+
+calendar:
+  - platform: caldav
+    url: https://caldav.icloud.com 
+    username: !secret icloud_username
+    password: !secret icloud_app_specific_password
+    calendars:
+      - 'Ronan & Susan'
+
+camera:
+  platform: generic
+  still_image_url: http://cdn.knmi.nl/knmi/map/general/weather-map.gif
+  name: Weerkaart_NL
+
+####################
+# Zones ############
+####################
+zone:
+  - name: Climber
+    latitude: 52.285391
+    longitude: 6.766818
+    radius: 100
+    icon: mdi:briefcase
+  - name: ASICS
+    latitude: 52.287312
+    longitude: 4.705387
+    radius: 150
+    icon: mdi:briefcase
+  - name: Steenweg
+    latitude: 52.226959
+    longitude: 6.913069
+    radius: 100
+    icon: mdi:baby-face-outline
+  - name: Twekkelerveld
+    latitude: 52.228332
+    longitude: 6.864980
+    radius: 100
+    icon: mdi:baby-face-outline
+  - name: Makoto
+    latitude: 52.320158
+    longitude: 6.925356
+    radius: 100
+    icon: mdi:weight-lifter
+  - name: Vondersweijde
+    latitude: 52.311115
+    longitude: 6.916714
+    radius: 100
+    icon: mdi:handball
+  - name: Thij
+    latitude: 52.317309
+    longitude: 6.908890
+    radius: 100
+    icon: mdi:handball
+  - name: Lofer
+    latitude: 47.588071
+    longitude: 12.691078
+    radius: 5000
+    icon: mdi:ski
+
+####################
+# Tado     #########
+####################
+tado:
+    username: !secret tado_username
+    password: !secret tado_password
+
+#spotify:
+#  client_id: !secret spotify_clientid
+#  client_secret: !secret spotify_clientsecret
+
+spotcast:
+  username: !secret spotify_ronan_username
+  password: !secret spotify_ronan_password
+  accounts:
+    ronan:
+      username: !secret spotify_ronan_username
+      password: !secret spotify_ronan_password
+    susan:
+      username: !secret spotify_susan_username
+      password: !secret spotify_susan_password
+
+light:
+  - platform: switch
+    name: Spotjes
+    entity_id: switch.spotjes
+  - platform: switch
+    name: Tuinlampen
+    entity_id: switch.tuinlampen
+  - platform: group
+    name: Beneden
+    entities:
+      - light.vensterbanklamp
+      - light.eettafellamp
+      - light.spotjes
+      - light.tuinlampen
+  - platform: group
+    name: AlleLampen
+    entities:
+      - light.vensterbanklamp
+      - light.eettafellamp
+      - light.slaapkamerlamp
+      - light.tuinlampen
+      - light.spotjes
+
+input_boolean:
+  holidaymode:
+    name: Vakantiemodus
+    initial: off
+    icon: mdi:beach
+  welterusten:
+    name: Nachtmodus opstarten
+    initial: off
+    icon: mdi:weather-night
+  wasmachine_klaar:
+      name: Wasmachine klaar
+      initial: off
+  wasmachine_draait:
+      name: Wasmachine draait
+      initial: off
+
+input_select:
+  wasmachine_status:
+    name: Wasmachine status
+    icon: mdi:washing-machine
+    options:
+     - "Uit"
+     - "Draait"
+     - "Klaar"
+    initial: "Uit"
+  origin:
+    name: Vertrekpunt
+    icon: mdi:map-marker
+    options:
+      - zone.home
+      - zone.climber
+      - zone.steenweg
+      - zone.twekkelerveld
+      - zone.asics
+    initial: zone.home
+  destination:
+    name: Bestemming
+    icon: mdi:map-marker-path
+    options:
+      - zone.home
+      - zone.climber
+      - zone.steenweg
+      - zone.twekkelerveld
+      - zone.asics
+    initial: zone.climber
+  radio_station:
+    name: Selecteer radiostation
+    icon: mdi:radio
+    options:
+      - 100% NL
+      - NPO Radio 1
+      - NPO Radio 2
+      - NPO 3FM
+      - Q-Music
+      - Radio 10
+      - Radio 538
+      - RTV Oost
+      - Sky Radio
+      - SLAM!
+      - Veronica
+      - Q-Music - Het Foute Uur
+      - Sky Radio - Christmas
+  afspeelmedium:
+    name: Afspeelmedium
+    icon: mdi:television-play
+    options:
+      - Woonkamer
+      - Slaapkamer
+      - Chromecast Woonkamer
+      - Chromecast Slaapkamer
+
+input_number: 
+  volume_radio:
+    name: Volume
+    icon: mdi:volume-high
+    initial: 0.5
+    min: 0
+    max: 1
+    step: 0.05 
+
+#device_tracker:
+#    platform: tado
+#    username: !secret tado_username
+#    password: !secret tado_password
+#    home_id: 445563
